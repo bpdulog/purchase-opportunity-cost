@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d1110">
+    <meta name="description" content="Explore how a purchase price might grow if invested instead.">
+    <title>Worth the Wait? — Purchase Opportunity Cost</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Purchase opportunity cost</p>
+          <h1>What could this<br>purchase become?</h1>
+          <p class="hero-copy">See how the price of something you want might grow if you invested it instead.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="icon-button" id="saveButton" type="button" aria-label="Save assumptions" title="Save assumptions">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          </button>
+          <button class="icon-button" id="resetButton" type="button" aria-label="Reset assumptions" title="Reset assumptions">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v6h6"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="controls" aria-label="Purchase and investment assumptions">
+          <div class="control-section">
+            <p class="section-label">The purchase</p>
+            <label class="field-label" for="purchaseName">What are you considering?</label>
+            <input class="text-input" id="purchaseName" type="text" maxlength="48" value="Phone" autocomplete="off">
+            <div class="control">
+              <div class="control-head"><label for="price">Price</label><span class="input-wrap"><span>$</span><input id="price" type="number" min="0" max="100000" step="1" value="1000" inputmode="decimal"></span></div>
+              <input class="range" id="priceRange" type="range" min="0" max="100000" step="100" value="1000" aria-label="Purchase price slider">
+              <div class="range-labels"><span>$0</span><span>$100,000</span></div>
+            </div>
+          </div>
+
+          <div class="control-section assumptions-section">
+            <p class="section-label">If you invested it</p>
+            <div class="control">
+              <div class="control-head"><label for="annualReturn">Assumed annual return</label><span class="input-wrap percent-wrap"><input id="annualReturn" type="number" min="-20" max="30" step="0.25" value="7" inputmode="decimal"><span>%</span></span></div>
+              <input class="range" id="returnRange" type="range" min="-20" max="30" step="0.25" value="7" aria-label="Assumed annual return slider">
+              <div class="range-labels"><span>−20%</span><span>30%</span></div>
+            </div>
+            <div class="control">
+              <div class="control-head"><label for="years">Time invested</label><span class="input-wrap years-wrap"><input id="years" type="number" min="0" max="50" step="1" value="10" inputmode="numeric"><span>years</span></span></div>
+              <input class="range" id="yearsRange" type="range" min="0" max="50" step="1" value="10" aria-label="Time invested slider">
+              <div class="range-labels"><span>0 years</span><span>50 years</span></div>
+            </div>
+          </div>
+
+          <label class="toggle-row"><input id="autoSave" type="checkbox" checked><span>Save changes automatically</span></label>
+          <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
+        </aside>
+
+        <section class="results" aria-label="Investment projection">
+          <div class="metric-grid">
+            <article class="metric highlight"><span>Projected value if invested</span><strong id="futureValue">$0</strong><small id="futureValueNote">After 10 years</small></article>
+            <article class="metric"><span id="differenceLabel">Potential market growth</span><strong id="differenceValue">$0</strong><small>Compared with the original price</small></article>
+            <article class="metric"><span>Original purchase price</span><strong id="priceMetric">$0</strong><small id="purchaseMetricNote">Phone today</small></article>
+          </div>
+
+          <div class="insight-strip"><div class="insight-mark" aria-hidden="true">↗</div><p id="insightText"></p></div>
+
+          <section class="chart-shell" aria-labelledby="chartTitle">
+            <div class="chart-header">
+              <div><p class="eyebrow">Illustrative projection</p><h2 id="chartTitle">If you invested $1,000</h2></div>
+              <div class="chart-legend"><span><i class="gold-dot"></i><span id="investmentLegend">Investment value</span></span><span><i class="line-dot"></i>Original cost</span></div>
+            </div>
+            <canvas id="projectionChart" width="1100" height="470" role="img" aria-label="Illustrative investment projection chart"></canvas>
+            <p class="chart-caption" id="chartCaption"></p>
+          </section>
+
+          <aside class="assumption-note" aria-label="Projection assumptions">
+            <p class="section-label">How to read this</p>
+            <p id="assumptionCopy">The projection applies the same assumed return every year. Actual market returns vary and are not guaranteed.</p>
+            <p>This comparison leaves out taxes, fees, inflation, and any resale value or personal value from the purchase.</p>
+          </aside>
+        </section>
+      </section>
+    </main>
+    <script src="app.js?v=1"></script>
+  </body>
+</html>
