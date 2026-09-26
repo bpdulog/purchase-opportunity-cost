@@ -61,7 +61,8 @@ function render() {
 function saveQuietly() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { setStatus("Could not save in this browser."); } }
 function drawChart() {
   const rect = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
-  const width = Math.max(320, Math.floor(rect.width)), height = Math.max(240, Math.floor(rect.height));
+  if (!rect.width || !rect.height) return;
+  const width = Math.floor(rect.width), height = Math.floor(rect.height);
   canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,width,height); ctx.fillStyle = "#0c1110"; ctx.fillRect(0,0,width,height);
   const pad = { top:22, right:22, bottom:43, left:78 }, plotW = width - pad.left - pad.right, plotH = height - pad.top - pad.bottom;
