@@ -1,5 +1,5 @@
 const STORAGE_KEY = "purchaseOpportunityCost.v1";
-const DEFAULTS = { purchaseName:"Phone", price:1000, annualReturn:7, years:10, autoSave:true };
+const DEFAULTS = { price:1000, annualReturn:7, years:10, autoSave:true };
 const LIMITS = { price:[0,100000], annualReturn:[-20,30], years:[0,50] };
 const state = loadState();
 const usd = new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 });
@@ -11,7 +11,6 @@ function loadState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!saved || typeof saved !== "object") return { ...DEFAULTS };
     return {
-      purchaseName:typeof saved.purchaseName === "string" ? saved.purchaseName.slice(0,48) : DEFAULTS.purchaseName,
       price:clamp(saved.price, ...LIMITS.price, DEFAULTS.price),
       annualReturn:clamp(saved.annualReturn, ...LIMITS.annualReturn, DEFAULTS.annualReturn),
       years:Math.round(clamp(saved.years, ...LIMITS.years, DEFAULTS.years)),
@@ -26,7 +25,6 @@ function projectValue(year) { return state.price * Math.pow(1 + state.annualRetu
 function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); setStatus("Saved on this device."); } catch { setStatus("Could not save in this browser."); } }
 function setStatus(message) { document.querySelector("#saveStatus").textContent = message; }
 function updateControls() {
-  document.querySelector("#purchaseName").value = state.purchaseName;
   document.querySelector("#price").value = state.price;
   document.querySelector("#priceRange").value = state.price;
   document.querySelector("#annualReturn").value = state.annualReturn;
@@ -36,19 +34,17 @@ function updateControls() {
   document.querySelector("#autoSave").checked = state.autoSave;
 }
 function render() {
-  const future = projectValue(state.years), difference = future - state.price, label = state.purchaseName.trim() || "Purchase";
+  const future = projectValue(state.years), difference = future - state.price;
   document.querySelector("#futureValue").textContent = money(future);
   document.querySelector("#futureValueNote").textContent = state.years === 1 ? "After 1 year" : `After ${state.years} years`;
   document.querySelector("#differenceLabel").textContent = difference < -0.5 ? "Potential investment loss" : "Potential market growth";
   document.querySelector("#differenceValue").textContent = signedMoney(difference);
   document.querySelector("#priceMetric").textContent = money(state.price);
-  document.querySelector("#purchaseMetricNote").textContent = `${label} today`;
   document.querySelector("#chartTitle").textContent = `If you invested ${money(state.price)}`;
-  document.querySelector("#investmentLegend").textContent = `${label} price invested`;
-  document.querySelector("#chartCaption").textContent = `${label} price invested today, growing at an assumed ${state.annualReturn}% each year for ${state.years} ${state.years === 1 ? "year" : "years"}. The teal line marks the original ${money(state.price)}.`;
+  document.querySelector("#chartCaption").textContent = `${money(state.price)} invested today, growing at an assumed ${state.annualReturn}% each year for ${state.years} ${state.years === 1 ? "year" : "years"}. The teal line marks the original ${money(state.price)}.`;
   document.querySelector("#assumptionCopy").textContent = `This illustration applies the same ${state.annualReturn}% assumed annual return every year. Actual market returns vary and are not guaranteed.`;
   const insight = difference > 0.5
-    ? `At this assumed return, investing ${money(state.price)} instead of buying the ${label.toLowerCase()} could leave ${money(future)} after ${state.years} years, including ${money(difference)} in growth.`
+    ? `At this assumed return, investing ${money(state.price)} instead of making the purchase could leave ${money(future)} after ${state.years} years, including ${money(difference)} in growth.`
     : difference < -0.5
       ? `At this assumed return, ${money(state.price)} invested for ${state.years} years would end at ${money(future)}, below its starting value by ${money(-difference)}.`
       : state.price === 0
@@ -85,15 +81,14 @@ function drawChart() {
   ctx.fillStyle = "#b8b2a2"; ctx.textAlign = "center"; ctx.textBaseline = "top";
   const tickCount = Math.min(5,state.years), ticks = state.years === 0 ? [0] : Array.from({length:tickCount+1},(_,i)=>Math.round(state.years*i/tickCount));
   [...new Set(ticks)].forEach(year=>ctx.fillText(`${year}y`,x(year),height-pad.bottom+13));
-  canvas.setAttribute("aria-label",`Investment projection chart for ${state.purchaseName || "purchase"}: ${money(state.price)} grows to ${money(last)} over ${state.years} years at an assumed ${state.annualReturn}% annual return; dashed teal line shows original cost.`);
+  canvas.setAttribute("aria-label",`Investment projection chart: ${money(state.price)} grows to ${money(last)} over ${state.years} years at an assumed ${state.annualReturn}% annual return; dashed teal line shows original cost.`);
 }
 function axisMoney(value) { return Math.abs(value) >= 1000000 ? compactUsd.format(value) : money(value); }
-function updateField(key,value) {
-  if (key === "purchaseName") state.purchaseName = value.slice(0,48);
-  else if (LIMITS[key]) {
+function updateField(key,value,fromSlider=false) {
+  if (LIMITS[key]) {
     const input = document.querySelector(`#${key}`), fallback = state[key], bounded = clamp(value,...LIMITS[key],fallback);
     state[key] = key === "years" ? Math.round(bounded) : Number(bounded.toFixed(2));
-    if (input.value === "" && value === "") input.value = state[key];
+    if (fromSlider || (input.value === "" && value === "")) input.value = state[key];
   }
   if (key === "price") document.querySelector("#priceRange").value = state.price;
   if (key === "annualReturn") document.querySelector("#returnRange").value = state.annualReturn;
@@ -103,10 +98,9 @@ function updateField(key,value) {
 
 document.addEventListener("input",event=>{
   const id = event.target.id;
-  if (id === "purchaseName") updateField("purchaseName",event.target.value);
-  else if (id === "price" || id === "priceRange") updateField("price",event.target.value);
-  else if (id === "annualReturn" || id === "returnRange") updateField("annualReturn",event.target.value);
-  else if (id === "years" || id === "yearsRange") updateField("years",event.target.value);
+  if (id === "price" || id === "priceRange") updateField("price",event.target.value,id === "priceRange");
+  else if (id === "annualReturn" || id === "returnRange") updateField("annualReturn",event.target.value,id === "returnRange");
+  else if (id === "years" || id === "yearsRange") updateField("years",event.target.value,id === "yearsRange");
 });
 document.querySelector("#autoSave").addEventListener("change",event=>{state.autoSave=event.target.checked;if(state.autoSave)saveState();else setStatus("Automatic saving is off.");});
 document.querySelector("#saveButton").addEventListener("click",saveState);

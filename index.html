@@ -30,8 +30,6 @@
         <aside class="controls" aria-label="Purchase and investment assumptions">
           <div class="control-section">
             <p class="section-label">The purchase</p>
-            <label class="field-label" for="purchaseName">What are you considering?</label>
-            <input class="text-input" id="purchaseName" type="text" maxlength="48" value="Phone" autocomplete="off">
             <div class="control">
               <div class="control-head"><label for="price">Price</label><span class="input-wrap"><span>$</span><input id="price" type="number" min="0" max="100000" step="1" value="1000" inputmode="decimal"></span></div>
               <input class="range" id="priceRange" type="range" min="0" max="100000" step="100" value="1000" aria-label="Purchase price slider">
@@ -61,7 +59,7 @@
           <div class="metric-grid">
             <article class="metric highlight"><span>Projected value if invested</span><strong id="futureValue">$0</strong><small id="futureValueNote">After 10 years</small></article>
             <article class="metric"><span id="differenceLabel">Potential market growth</span><strong id="differenceValue">$0</strong><small>Compared with the original price</small></article>
-            <article class="metric"><span>Original purchase price</span><strong id="priceMetric">$0</strong><small id="purchaseMetricNote">Phone today</small></article>
+            <article class="metric"><span>Original purchase price</span><strong id="priceMetric">$0</strong><small>Amount invested today</small></article>
           </div>
 
           <div class="insight-strip"><div class="insight-mark" aria-hidden="true">↗</div><p id="insightText"></p></div>
@@ -69,7 +67,7 @@
           <section class="chart-shell" aria-labelledby="chartTitle">
             <div class="chart-header">
               <div><p class="eyebrow">Illustrative projection</p><h2 id="chartTitle">If you invested $1,000</h2></div>
-              <div class="chart-legend"><span><i class="gold-dot"></i><span id="investmentLegend">Investment value</span></span><span><i class="line-dot"></i>Original cost</span></div>
+              <div class="chart-legend"><span><i class="gold-dot"></i>Investment value</span><span><i class="line-dot"></i>Original cost</span></div>
             </div>
             <canvas id="projectionChart" width="1100" height="470" role="img" aria-label="Illustrative investment projection chart"></canvas>
             <p class="chart-caption" id="chartCaption"></p>
@@ -83,6 +81,6 @@
         </section>
       </section>
     </main>
-    <script src="app.js?v=1"></script>
+    <script src="app.js?v=3"></script>
   </body>
 </html>
